@@ -10,13 +10,26 @@ var server = http.createServer(app);
 var io = socketIO(server)
 
 app.use(express.static(publicPath));
+let time = new Date()
 
 io.on('connection',(socket)=>{
   console.log('New user connected');
 
+  socket.emit('showMes',[{
+    text:"message1"
+  },{
+    text:"message2"
+  }])
+
   socket.on('disconnect',()=>{
     console.log('User was diconnected')
   })
+
+  socket.on('MyMessage', (data)=>{
+    console.log(data, time)
+  })
+
+  
 })
 
 
