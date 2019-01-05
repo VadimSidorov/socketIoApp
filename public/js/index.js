@@ -1,5 +1,6 @@
 var socket = io();
 
+
 socket.on('connect', function () {
   console.log('Connected to server');
 });
@@ -9,33 +10,39 @@ socket.on('disconnect', function () {
 });
 
 socket.on('newMessage', function (message) {
-  console.log('newMessage', message);
-  var li = jQuery('<li></li>');
-  li.text(`${message.from}: ${message.text}`);
+  var formattedTime = moment(message.createdAt).format('h:mm a');
+  var template = jQuery("#message-template").html()
+  var html = Mustache.render(template,{
+    text: message.text,
+    from: message.from,
+    createdAt: formattedTime
+  })
+  jQuery('#messages').append(html)
 
-  jQuery('#messages').append(li);
+ 
 });
 
 socket.on('newLocationMessage',function(message){
-  var li = jQuery('<li></li>')
-  var a = jQuery('<a target="_blank">My current location</a>')
-
-  li.text(`${message.from}`);
-  a.attr('href', message.url);
-  li.append(a);
-  console.log(message)
-
-  jQuery('#messages').append(li);
+  var formattedTime = moment(message.createdAt).format('h:mm a');
+  var template = jQuery("#location-message-template").html()
+  var html = Mustache.render(template,{
+    url: message.url,
+    from: message.from,
+    createdAt: formattedTime
+  })
+ 
+  jQuery('#messages').append(html);
 });
 
 jQuery('#message-form').on('submit', function (e) {
   e.preventDefault();
 
+  var textbox = jQuery('[name=message]')
   socket.emit('createMessage', {
     from: 'User',
-    text: jQuery('[name=message]').val()
+    text: textbox.val()
   }, function () {
-
+    textbox.val('')
   });
 });
 
@@ -44,13 +51,18 @@ locationButton.on('click', function(){
   if (!navigator.geolocation){
     return alert('Navigation not available')
   }
+
+  locationButton.attr('disabled', 'disabled').text('Sending Location ...')
+
   navigator.geolocation.getCurrentPosition(function(position){
+    locationButton.removeAttr('disabled').text('Send Location');
     socket.emit('createLocationMessage', {
       latitude:position.coords.latitude,
       longitude:position.coords.longitude,
 
     })
   }, function(err){
-    alert('Unable to fetch location')
+    alert('Unable to fetch location');
+    locationButton.removeAttr('disabled').text('Send Location');
   })
 })
