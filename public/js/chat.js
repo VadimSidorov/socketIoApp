@@ -26,10 +26,13 @@ socket.on('connect', function () {
       alert(err);
       window.location.href = '/'
     }else{
+      
       console.log('No error');
     }
   });
 });
+
+
 
 socket.on('disconnect', function () {
   console.log('Disconnected from server');

@@ -1,8 +1,28 @@
 const expect = require('expect');
 
-const {isRealString} = require('./validators');
+const {isRealString, UniqueUser} = require('./validators');
+const {Users} = require('./users')
 
 describe('isRealString',()=>{
+
+    beforeEach(()=>{
+        users = new Users();
+        
+        users.users = [{
+            id:1,
+            name:"Vadick",
+            room:'Node Course'
+        },{
+            id:2,
+            name:"Alena",
+            room:'React Course'
+        },{
+            id:3,
+            name:"Kristina",
+            room:'Node Course'
+        }]
+    });
+
     it('should reject non string values', ()=>{
         var displayName = true;
         var roomName = false;
@@ -32,4 +52,13 @@ describe('isRealString',()=>{
         expect(stringDisplay).toBe(true);
         expect(stringName).toBe(true)
     });
+
+    it('should validate unique user',()=>{
+        var userList = users.getUserList('Node Course');
+        var x = UniqueUser('Vadick', userList).length;
+        
+        expect(x).toBe(0);
+
+        expect()
+    })
 })

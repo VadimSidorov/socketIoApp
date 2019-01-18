@@ -5,7 +5,8 @@ class Users {
         this.users = []
     }
     addUser(id, name, room){
-        var user = {id, name, room};
+        var user = {id, name,
+        room:room.toLowerCase()};
         this.users.push(user);
         return user;
     }
@@ -32,6 +33,15 @@ class Users {
             return user.name
         })
         return nameArray
+    }
+
+    getRoomList(users){
+        var rooms = users.users.map(i=>i.room);
+
+        var uniqueRooms = rooms.filter(function(item, pos) {
+            return rooms.indexOf(item) == pos;
+        })
+        return uniqueRooms
     }
 }
 
